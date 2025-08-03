@@ -1,0 +1,67 @@
+AWS Console
+EC2
+HTTP
+HTTPS
+Security key file save in C:\Users\HP\.ssh\
+launch instance
+Connect to instance
+Open Git Bash: ssh -i "C:\Users\HP\.ssh\bhp.pem" ubuntu@ec2-13-60-199-8.eu-north-1.compute.amazonaws.com
+hit yes to continue connecting
+
+
+now  on WinSCP enter 
+ hostname: URL from SSH Client instance in AWS Connect
+ user name: ubuntu
+ password- advanced, .pem file let putty convert to .ppk file
+
+ copy  housepriceclassification folder to /home/ubuntu
+now again on bash check using: ls 
+    will display currectry directory as housingPriceCLassification
+now : sudo apt-get update
+    will update all packages we have locally on this EC2 instance
+now: sudo apt-get install nginx
+To check nginx status: sudo service nginx status
+
+!!!!!! Press 'q' to start Typing again !!!!!!!!
+
+
+now to confirm when if running fine:
+    use the web url in browser:
+    it is showing welcome nginx page, so now we just need to find and replace the html with our html
+in Git Bash: cd /etc/nginx/
+            : pwd
+call the files: ll
+now check nginx.conf: less nginx.conf
+We see where the site is pointing
+        # Virtual Host Configs
+        ##
+
+        include /etc/nginx/conf.d/*.conf;
+        include /etc/nginx/sites-enabled/*; !!!!!!! HERE!!!!!!
+
+so we do: less sites-enabled/default
+    the root file here is: root /var/www/html;
+
+so now check: less /var/www/html/index.nginx-debian.html
+
+THIS is the File we need to replace our html with!!
+ so now we go to: cd sites-enabled/
+Check list of files: ls    (shows only 'default' as a folder)
+            : ll
+This shows its atually a simlink(symbolic links) to sites available
+So firstly we disable default config: sudo unlink default
+and now,
+        go to sites available: cd ../sites-available/
+we add our bhp.conf here: sudo vim bhp.conf
+paste the server block here:
+check basic vim cheetsheet to edit
+
+now we create a simlink: cd ../sites-enabled/
+    : sudo ln -v -s /etc/nginx/sites-available/bhp.conf inside /etc/nginx/sites-enabled
+    : ll (u see bhp.conf)
+
+Test nginx config: sudo nginx -t
+    if (error need to remove file: sudo rm /etc/nginx/sites-enabled/inside)
+    else syntax is okay and tast is sucsessfull continue:
+now restart server: sudo service nginx restart
+    check status: sudo service nginx status        

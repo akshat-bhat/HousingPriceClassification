@@ -1,0 +1,32 @@
+NginX download - extract and copy- past in c\programfiles - run nginx.exe- search 'localhost' in browser to check if it is running.
+By default it is going to certain directory and loading index.html file. which is specided in nginx.conf file.
+
+SO now to load my own html file, I need to change the nginx.conf file.
+Changing the loading directory in nginx.conf file(edit as administrator in notepad):
+1. Open the `nginx.conf` file located in the `conf` directory of your Nginx installation (e.g., `C:\Program Files\nginx\conf\nginx.conf`).
+2. Look for the `server` block that contains the `location /` directive.
+3. Inside the `location /` block, find the `root` directive. This directive specifies the directory from which Nginx serves files.
+4. Change the path in the `root` directive to point to the directory containing your custom HTML files. 
+Changed 
+    root html- root C:\Users\HP\Desktop\STEP-UP\ML_Project\HousePriceClassification\BHP\client
+    and add in index- app.html
+    save
+in Task manager kill/end task nginx.exe and run again
+    now search localhost and refresh the page
+    
+    It is still not rendering and the estimated price is not working
+    for that:
+go to app.js:
+    switch to: var url= "/api/get_location_names"
+
+Now for it to know which server to go to when we do /api:
+we are going to run our flask server on 500 port only so:
+    We need to configure the reverse proxy in nginx server so that it routes those requests to 5000 port:
+    for that :
+    add this is .conf server section:
+            location /api/ {
+                rewrite ^/api(.*) $1 break;
+                proxy_pass http://127.0.0.1:5000;
+            }
+    any /api requests are now routed to the same host but 5000 port
+    now RESTART NginX and RUN Python flask server
