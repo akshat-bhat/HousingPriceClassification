@@ -1,2 +1,0 @@
-# HousingPriceClassification
-BasicProject
